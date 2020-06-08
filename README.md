@@ -1,5 +1,5 @@
 # Project-5
-#Functionality
+# Functionality
  - Search for food in the Open Food Facts database.
 
  - If the user enters a character that is not a number, the program must repeat the question to him.
