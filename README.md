@@ -1,11 +1,11 @@
 # Project-5
-##Functionality
+#Functionality
  - Search for food in the Open Food Facts database.
 
  - If the user enters a character that is not a number, the program must repeat the question to him.
  - The search must be done on a MySql base.
- 
- ##- User interaction in the terminal.
+
+# User interaction in the terminal.
  1. What food do you want to replace ?
     - 1.1 Select the category. (Several proposals associated with a number. The user enters the corresponding number and presses input)
     - 1.2 Select the food. (Several proposals associated with a number. The user enters the number corresponding to the chosen food and presses input)
