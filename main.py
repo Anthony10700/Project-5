@@ -4,13 +4,15 @@
 import random
 import database
 import env
-
+import c_product
+import c_categories
 
 def main():
     """function to the main programme"""
     d_base = database.DataBase()
     d_base.connect_to_db()
     my_env = env.Environment()
+
 
     my_env.write_text_for_user("1 - Quel aliment souhaitez-vous remplacer ?\n"
                                "2 - Retrouver mes aliments substitués     ?", ["1", "2"])
@@ -22,43 +24,46 @@ def main():
         my_env.list_of_choice = []
         my_result = d_base.select_all_categories()
         for i in range(0, len(my_result)):
-            tmp_obj = my_result[i]
+            my_categorie = c_categories.Categories()
+            my_categorie.load_one_catagorie(my_result[i])
             my_env.list_of_choice.append(str(i))
-            my_env.list_of_result.append(str(tmp_obj[1]))
-            my_env.print_element_array_categories(tmp_obj, i)
+            my_env.list_of_result.append(my_categorie)
+            my_env.print_element_array_categories(my_categorie, i)
         my_env.input_user_verification()
 
         if my_env.choice in my_env.list_of_choice:
             my_env.categories_id = my_env.choice
             my_env.write_text_for_user(
-                "Vous avez choisi : " + my_env.list_of_result[int(my_env.choice)] + "\n")
+                "Vous avez choisi : " + my_env.list_of_result[int(my_env.choice)].get_completed_name + "\n")
             my_result = d_base.select_all_products(int(my_env.choice) + 1)
-            my_env.write_text_for_user("Sélectionnez le produit : \n" +
-                                       "ID".ljust(3) + " :                           DESCRIPTION"
-                                                       "                                           "
-                                                       " : ID IN DATABASE : NUTRI SCORE")
+            my_env.write_text_for_user(
+                "Sélectionnez le produit : \n{0} :                           DESCRIPTION           "
+                "                                 : ID IN DATABASE : NUTRI SCORE".format("ID".ljust(3)))
             my_env.list_of_result = []
 
-            for i in range(0, 400):
-                tmp_obj = my_result[random.randint(0, len(my_result) - 1)]
+            for i in range(0, 40):
+                prod_list = c_product.Product()
+                prod_list.load_product(my_result[random.randint(0, len(my_result) - 1)])
                 my_env.list_of_choice.append(str(i))
-                my_env.list_of_result.append(tmp_obj)
-                my_env.print_element_array_product(tmp_obj, i)
+                my_env.list_of_result.append(prod_list)
+                my_env.print_element_array_product(prod_list, i)
             my_env.input_user_verification()
 
             my_env.write_text_for_user(
-                "Vous avez choisi        : " + str(my_env.list_of_result[int(my_env.choice)][1]) +
-                "\nLe nutri score est      : " + str(my_env.list_of_result[int(my_env.choice)][8]).
-                upper() +
-                "\nLes magasins sont       : " + str(my_env.list_of_result[int(my_env.choice)][6]) +
-                "\nUrl openfoodfacts est : " + str(my_env.list_of_result[int(my_env.choice)][4]) +
-                "\n\n")
+                "Vous avez choisi        : {0}\nLe nutri score est      : {1}\nLes magasins sont   "
+                "    : {2}\nUrl openfoodfacts est : {3}\n\n".format(
+                    str(my_env.list_of_result[int(my_env.choice)].get_completed_name),
+                    str(my_env.list_of_result[int(my_env.choice)].get_nutriscore_grade).
+                    upper(), str(my_env.list_of_result[int(my_env.choice)].get_store),
+                    str(my_env.list_of_result[int(my_env.choice)].get_url)))
+
             my_env.write_text_for_user("Voici les substituts : ")
             my_env.print_substitute_result_products(
                 d_base.select_all_substitute_product(
-                    my_env.list_of_result[int(my_env.choice)][7], my_env.categories_id),
-                my_env.list_of_result[int(my_env.choice)][0],
-                my_env.list_of_result[int(my_env.choice)][8])
+                    my_env.list_of_result[int(my_env.choice)].get_categories_str,
+                    my_env.categories_id),
+                my_env.list_of_result[int(my_env.choice)].get_id_products,
+                my_env.list_of_result[int(my_env.choice)].get_nutriscore_grade)
 
             if len(my_env.history_result) > 0:
                 my_env.write_text_for_user("\nSélectionner votre substitue : ")
@@ -67,15 +72,14 @@ def main():
                 if my_env.choice in my_env.list_of_choice:
                     my_env.my_product_select = my_env.history_result[int(my_env.choice)-1]
                     my_env.write_text_for_user(
-                        "Vous avez choisi comme substitue       : " + str(
-                            my_env.my_product_select[1]) +
-                        "\nLe nutri score est                     : " + str(
-                            my_env.my_product_select[8]).upper() +
-                        "\nLes magasins sont                      : " + str(
-                            my_env.my_product_select[6]) +
-                        "\nUrl openfoodfacts est                  : " + str(
-                            my_env.my_product_select[4]) +
-                        "\n\n")
+                        "Vous avez choisi comme substitue       : {0}\nLe nutri score est          "
+                        "           : {1}\nLes magasins sont                      : {2}\nUrl "
+                        "openfoodfacts est                  : {3}\n\n".format(
+                            str(
+                                my_env.my_product_select[1]), str(
+                                my_env.my_product_select[8]).upper(), str(
+                                my_env.my_product_select[6]), str(
+                                my_env.my_product_select[4])))
 
             my_env.write_text_for_user("\n\n"
                                        "Souhaitez-vous enregistrer votre résultat dans la base de "
@@ -95,13 +99,14 @@ def main():
     elif my_env.choice == "2":
         products_list = d_base.select_all_product_save
         i = 0
-        my_env.write_text_for_user("Liste des produits sauvegardés : \n" +
-                                   "ID".ljust(3) + " :                           DESCRIPTION"
-                                                   "                                            "
-                                                   ": ID IN DATABASE : NUTRI SCORE\n")
+        my_env.write_text_for_user(
+            "Liste des produits sauvegardés : \n{0} :                           DESCRIPTION        "
+            "                                    : ID IN DATABASE : NUTRI SCORE\n".format("ID".ljust(3)))
         for product in products_list:
+            prod_list = c_product.Product()
+            prod_list.load_product(product)
             i += 1
-            my_env.print_element_array_product(product, i)
+            my_env.print_element_array_product(prod_list, i)
 
 
 if __name__ == "__main__":

@@ -47,9 +47,9 @@ class Environment:
         :type temp_val: product select list of 9 element
         """
         phrases = "{0} : {1} : {2} : {3}".format(str(value_loop_for_incrementation).ljust(3),
-                                                 str(temp_val[1]).strip().ljust(80),
-                                                 str(temp_val[0]).ljust(14),
-                                                 str(temp_val[8]).upper())
+                                                 str(temp_val.get_completed_name).replace("\n", "").ljust(80),
+                                                 str(temp_val.get_id_products).ljust(14),
+                                                 str(temp_val.get_nutriscore_grade).upper())
         print(phrases)
 
         self.last_question = \
@@ -68,7 +68,7 @@ class Environment:
         print(phrases)
 
         self.list_of_choice = []
-        self.history_result = []
+        self.history_result = [] # VOIR ICI
         for one_result in list_of_product_substitute:
             if str(nb_of_selected_id) != str(one_result[0]) and \
                     str(nts_select_id).lower() > str(one_result[8]).lower():
@@ -92,6 +92,7 @@ class Environment:
         :type temp_val: product select list of 9 element
         """
         phrases = "{0} :   {1} :  pour un total de  {2}products".format(
-            str(value_loop_for_incrementation).ljust(3), str(temp_val[1]).ljust(60),
-            str(temp_val[3]).ljust(7))
+            str(value_loop_for_incrementation).ljust(3), str(temp_val.get_completed_name).ljust(60),
+            str(temp_val.get_nb_of_products).ljust(7))
         print(phrases)
+

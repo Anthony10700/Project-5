@@ -5,7 +5,7 @@ import json
 import requests
 import mysql.connector
 NB_OF_CATEGORIES = 3  # the number of categories in data base
-NB_OF_PAGE_DL = 400  # 1 page = 20 products
+NB_OF_PAGE_DL = 4  # 1 page = 20 products
 
 
 def main():
