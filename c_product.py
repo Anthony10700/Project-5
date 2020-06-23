@@ -17,6 +17,7 @@ class Product:
         self.nutriscore_grade = ""
         self.categories_idcategories = 0
         self.products_in_list = []
+        self.product_id_sub = 0
 
     def load_product(self, product):
         """ For load a product :type product: list of 10 elements """
@@ -32,6 +33,8 @@ class Product:
         self.categories_str = product[7].replace("\n", "")
         self.nutriscore_grade = product[8].replace("\n", "")
         self.categories_idcategories = product[9]
+        if len(product) == 11:
+            self.product_id_sub = product[10]
 
     def return_product_in_list(self):
         """

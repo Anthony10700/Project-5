@@ -35,6 +35,11 @@ class DataBase:
         self.my_cursor.execute(sql_insert_str, sql_value)
         self.my_db.commit()  # TEST IF RETURN ERROR BD EX: INSERT in babsdqsd.table
 
+    def select_a_product(self, id_of_product):
+        """Select a product to a database"""
+        return self.select_to_db("SELECT * FROM `openfoodfacts`.`products` WHERE `openfoodfacts`."
+                                 "`products`.`idproducts` = {0}".format(str(id_of_product)))
+
     def select_all_categories(self):
         """Functione with select all categories in mysql data base"""
         return self.select_to_db("SELECT * FROM `openfoodfacts`.`categories`")
@@ -65,17 +70,20 @@ class DataBase:
 
         return list_of_return_value
 
-    def insert_product_for_save(self, product):
-        """        :rtype: nothink
+    def insert_product_for_save(self, product, id_product_select):
+        """
+        :param id_product_select:
+        :rtype: nothink
         :param product: the product to insert , the format is list 9 element
         """
-        product = list(product)
+        product = list(product.products_in_list)
         product.pop(0)
         sql = "INSERT INTO `openfoodfacts`.`products_save` (completed_name, countries, " \
               "id_openfoodfacts, url, image_url, store, categories_str, nutriscore_grade , " \
-              "categories_idcategories) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+              "categories_idcategories, ancien_produits_sub) VALUES (%s, %s, %s, %s, %s, %s, %s," \
+              " %s, %s, %s)"
 
-        self.my_cursor.execute(sql, tuple(product))
+        self.my_cursor.execute(sql, tuple(product) + (id_product_select,))
         self.my_db.commit()
 
     @property

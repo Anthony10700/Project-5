@@ -4,8 +4,9 @@
 import json
 import requests
 import mysql.connector
-NB_OF_CATEGORIES = 3  # the number of categories in data base
-NB_OF_PAGE_DL = 4  # 1 page = 20 products
+ST_OF_CATEGORIES = 0
+NB_OF_CATEGORIES = 6  # the number of categories in data base
+NB_OF_PAGE_DL = 20  # 1 page = 20 products
 
 
 def main():
@@ -28,7 +29,7 @@ def main():
 
     test = json.loads(response.text.encode('utf8'))
 
-    test = test["tags"][0:NB_OF_CATEGORIES]
+    test = test["tags"][ST_OF_CATEGORIES:ST_OF_CATEGORIES+NB_OF_CATEGORIES]
 
     # create DATABASE and drop if exist
     my_cursor.execute("DROP DATABASE IF EXISTS openfoodfacts")
@@ -48,7 +49,8 @@ def main():
     for product_ in test:
         sql = "INSERT INTO `openfoodfacts`.`categories` (completed_name, URL, nb_of_products)" \
               " VALUES (%s, %s, %s)"
-        val = (str(product_["name"]).replace("'", "`"), product_["url"], product_["products"])
+        val = (str(product_["name"]).replace("'", " ").replace("\n", ""), product_["url"],
+               product_["products"])
         my_cursor.execute(sql, val)
 
     my_db.commit()
@@ -66,7 +68,7 @@ def main():
                 if str(d_var['categories_lc']) == "fr":
                     data_temp.append(d_var)
             list_temp.extend(data_temp)
-        data_all.update({str(product_["name"]).replace("'", "`"): list_temp})
+        data_all.update({str(product_["name"]).replace("'", " ").replace("\n", ""): list_temp})
 
     my_cursor.execute(
         "CREATE TABLE IF NOT EXISTS `openfoodfacts`.`products` ("
@@ -98,15 +100,21 @@ def main():
         "  `id_openfoodfacts` TEXT NOT NULL,"
         "  `url` TEXT NOT NULL,"
         "  `image_url` TEXT NULL,"
-        "  `store` TEXT NULL,"
+        "  `store` MEDIUMTEXT NULL,"
         "  `categories_str` TEXT NOT NULL,"
         "  `nutriscore_grade` VARCHAR(45) NOT NULL,"
         "  `categories_idcategories` INT NOT NULL,"
-        "  PRIMARY KEY (`idproducts`, `categories_idcategories`),"
-        "  INDEX `fk_products_save_categories1_idx` (`categories_idcategories` ASC) VISIBLE,"
-        "  CONSTRAINT `fk_products_save_categories1`"
+        "  `ancien_produits_sub` INT NOT NULL,"
+        "  PRIMARY KEY (`idproducts`, `categories_idcategories`, `ancien_produits_sub`),"
+        "  INDEX `fk_products_categories_idx` (`categories_idcategories` ASC) VISIBLE,"
+        "  CONSTRAINT `fk_products_categories0`"
         "    FOREIGN KEY (`categories_idcategories`)"
         "    REFERENCES `openfoodfacts`.`categories` (`idcategories`)"
+        "    ON DELETE NO ACTION"
+        "    ON UPDATE NO ACTION,"
+        "  CONSTRAINT `fk_products_sub`"
+        "    FOREIGN KEY (`idproducts`)"
+        "    REFERENCES `openfoodfacts`.`products` (`idproducts`)"
         "    ON DELETE NO ACTION"
         "    ON UPDATE NO ACTION)"
         "ENGINE = InnoDB"
@@ -114,9 +122,10 @@ def main():
 
     for product_ in data_all:
         print(product_)
-        sql = "SELECT idcategories FROM `openfoodfacts`.`categories` WHERE " \
-              "`openfoodfacts`.`categories`.`completed_name` LIKE \'%{0}%\'".format(str(product_))
-        my_cursor.execute(sql)
+        sql_in = "SELECT idcategories FROM `openfoodfacts`.`categories` WHERE " \
+              "`openfoodfacts`.`categories`.`completed_name` =\'{0}\'".format(str(product_).replace("'", " ").
+                                                                              replace("\n", ""))
+        my_cursor.execute(sql_in)
         my_result = my_cursor.fetchall()
         for unique_product in data_all[product_]:
             sql = 'INSERT INTO `openfoodfacts`.`products` (completed_name, countries, ' \
@@ -133,7 +142,7 @@ def main():
                     val = val + ("No_" + list_of_key[value],)
                 else:
                     val = val + (unique_product[list_of_key[value]],)
-            val = val + (str(my_result[0][0]), )
+            val = val + (my_result[0][0], )
 
             my_cursor.execute(sql, val)
         my_db.commit()

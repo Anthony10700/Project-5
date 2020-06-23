@@ -11,4 +11,5 @@
     - 1.2 Select the food. (Several proposals associated with a number. The user enters the number corresponding to the chosen food and presses input)
     - 1.3 The program offers a substitute, description, store or purchase (if any) and a link to the Open Food Facts page regarding this food.
     - 1.4 The user then has the ability to record the result in the database.
+    - 1.5 The user then has the possibility to restart the program.
  2. Find my substituted foods.

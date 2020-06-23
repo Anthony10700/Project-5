@@ -1,6 +1,7 @@
 """Class for user environment"""
 # !/usr/bin/python3
 # -*- coding: Utf-8 -*
+import c_product as prd
 
 
 class Environment:
@@ -14,7 +15,8 @@ class Environment:
         self.list_of_choice = []
         self.list_of_result = []
         self.categories_id = 0
-        self.my_product_select = []
+        self.my_product_select = object
+        self.my_product_base = object
 
     def write_text_for_user(self, text, list_of_choices=[]):
         """ function for write text for user save in last question et define list of choices
@@ -41,13 +43,38 @@ class Environment:
             self.print_last_phrase()
             self.get_input_user()
 
+    def print_element_saved(self, product_save, product_base, value_loop_for_incrementation):
+        """
+        :param product_base: product select for the substitute
+        :type value_loop_for_incrementation: incremented value for list id
+        :type product_save: product select list of 11 element
+        """
+
+        phrases = "Ancien produit {0} : {1} : {2} : {3}".format(
+            str(value_loop_for_incrementation).ljust(3),
+            str(product_base.get_completed_name).replace("\n", "").ljust(80),
+            str(product_base.get_id_products).ljust(14),
+            str(product_base.get_nutriscore_grade).upper())
+
+        phrases += "\n > Substitut   {0} : {1} : {2} : {3}".format(
+            str(value_loop_for_incrementation).ljust(3),
+            str(product_save.get_completed_name).replace("\n", "").ljust(80),
+            str(product_save.get_id_products).ljust(14),
+            str(product_save.get_nutriscore_grade).upper())
+        print(phrases)
+
+        self.last_question = \
+            "{0}\n{1}".format(self.last_question, phrases)
+
     def print_element_array_product(self, temp_val, value_loop_for_incrementation):
         """
         :type value_loop_for_incrementation: incremented value for list id
         :type temp_val: product select list of 9 element
         """
         phrases = "{0} : {1} : {2} : {3}".format(str(value_loop_for_incrementation).ljust(3),
-                                                 str(temp_val.get_completed_name).replace("\n", "").ljust(80),
+                                                 str(temp_val.get_completed_name).replace("\n",
+                                                                                          "").ljust(
+                                                     80),
                                                  str(temp_val.get_id_products).ljust(14),
                                                  str(temp_val.get_nutriscore_grade).upper())
         print(phrases)
@@ -62,24 +89,28 @@ class Environment:
         :param nb_of_selected_id: the ID IN DATABASE of selected product
         :type list_of_product_substitute: list returned by database class, is the product substitute
         """
+
         i = 0
         phrases = "{0} :                           DESCRIPTION                                  " \
                   "          : ID IN DATABASE : NUTRI SCORE".format("ID".ljust(3))
         print(phrases)
 
         self.list_of_choice = []
-        self.history_result = [] # VOIR ICI
+        self.history_result = []
         for one_result in list_of_product_substitute:
             if str(nb_of_selected_id) != str(one_result[0]) and \
                     str(nts_select_id).lower() > str(one_result[8]).lower():
-                i += 1
+                product = prd.Product()
+                product.load_product(one_result)
+
                 phrases = "{0} : {1} : {2} : {3}".format(str(i).ljust(3),
-                                                         str(one_result[1]).ljust(80),
-                                                         str(one_result[0]).ljust(14),
-                                                         str(one_result[8]).upper())
+                                                         str(product.get_completed_name.ljust(80)),
+                                                         str(product.get_id_products).ljust(14),
+                                                         str(product.get_nutriscore_grade).upper())
                 print(phrases)
                 self.list_of_choice.append(str(i))
-                self.history_result.append(one_result)
+                self.history_result.append(product)
+                i += 1
             elif i == 0 and str(nts_select_id).lower() > str(one_result[8]).lower():
                 print("PAS DE RESULTAT")
         if len(self.history_result) == 0:
@@ -95,4 +126,3 @@ class Environment:
             str(value_loop_for_incrementation).ljust(3), str(temp_val.get_completed_name).ljust(60),
             str(temp_val.get_nb_of_products).ljust(7))
         print(phrases)
-
