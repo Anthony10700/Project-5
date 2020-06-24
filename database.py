@@ -59,12 +59,31 @@ class DataBase:
                                    "{0}".format(str(int(categories_id) + 1)))
         list_of_return_value = []
         for i in range(0, len(result)):
-            list_of_categories = str(result[i][7]).strip().split(",")
-            list_of_select_categories = categories_str.strip().split(",")
-            if list_of_categories[len(list_of_categories) - 1] == \
-                    list_of_select_categories[len(list_of_select_categories) - 1]:
-                list_of_return_value.append(result[i])
+            list_of_categories = str(result[i][7]).replace("\'", " ").strip().split(",")
+            list_of_select_categories = categories_str.replace("\'", " ").strip().split(",")
 
+            for element in reversed(list_of_categories):
+                for element_in in reversed(list_of_select_categories):
+                    element_as_bytes = str.encode(element)
+                    element_in_as_bytess = str.encode(element_in)
+                    if element_as_bytes == element_in_as_bytess:
+                        list_of_return_value.append(result[i])
+                        break
+                else:
+                    continue
+                break
+
+        var_i = 0
+        while var_i < len(list_of_return_value) - 1:
+            car_one = list_of_return_value[var_i][8]
+            car_two = list_of_return_value[var_i + 1][8]
+            if car_one > car_two:
+                tmp = list_of_return_value[var_i]
+                list_of_return_value[var_i] = list_of_return_value[var_i + 1]
+                list_of_return_value[var_i + 1] = tmp
+                var_i = 0
+            var_i += 1
+        var_i = 0
         if len(list_of_return_value) == 0:
             list_of_return_value.append(["NOTHING"] * 10)
 

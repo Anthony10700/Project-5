@@ -96,7 +96,8 @@ def main():
             if my_env.choice in my_env.list_of_choice:
 
                 if my_env.choice == "1" and len(my_env.history_result) > 0:
-                    d_base.insert_product_for_save(my_env.my_product_select, my_env.my_product_base.get_id_products)
+                    d_base.insert_product_for_save(my_env.my_product_select, my_env.my_product_base.
+                                                   get_id_products)
                     my_env.write_text_for_user("Le produit a bien été sauvegardé.")
 
                 my_env.write_text_for_user("\n\n"
@@ -117,7 +118,9 @@ def main():
         i = 0
         my_env.write_text_for_user(
             "Liste des produits sauvegardés : \n{0} :                            DESCRIPTION       "
-            "                                    : ID IN DATABASE : NUTRI SCORE\n".format("ID".ljust(18)))
+            "                                    : ID IN DATABASE : NUTRI SCORE"
+            "\n".format("ID".ljust(18)))
+
         for product in products_list:
             prod_list = c_product.Product()
             prod_list.load_product(product)

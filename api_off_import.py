@@ -4,8 +4,7 @@
 import json
 import requests
 import mysql.connector
-ST_OF_CATEGORIES = 0
-NB_OF_CATEGORIES = 6  # the number of categories in data base
+
 NB_OF_PAGE_DL = 20  # 1 page = 20 products
 
 
@@ -18,18 +17,28 @@ def main():
         password="aqwXSZedcVFR"
     )
     my_cursor = my_db.cursor()
+    list_of_categories = []
+    list_of_url_categories = [
+        "https://fr.openfoodfacts.org/categorie/boissons-a-la-canneberge.json",
+        "https://fr.openfoodfacts.org/categorie/boissons-a-l-orange.json",
+        "https://fr.openfoodfacts.org/categorie/jus-de-fruits.json",
+        "https://fr.openfoodfacts.org/categorie/nectars-de-fruits.json",
+        "https://fr.openfoodfacts.org/categorie/sodas-aux-fruits.json",
+        "https://fr.openfoodfacts.org/categorie/boissons-alcoolisees.json",
+        "https://fr.openfoodfacts.org/categorie/boissons-au-cafe.json",
+        "https://fr.openfoodfacts.org/categorie/tisanes-infusees.json",
+        "https://fr.openfoodfacts.org/categorie/boissons-au-the.json"
+    ]
 
-    url = "https://fr.openfoodfacts.org/categories.json"
+    for url in list_of_url_categories:
+        payload = {}
+        headers = {}
+        data_all = {}
 
-    payload = {}
-    headers = {}
-    data_all = {}
+        response = requests.request("GET", url, headers=headers, data=payload)
 
-    response = requests.request("GET", url, headers=headers, data=payload)
-
-    test = json.loads(response.text.encode('utf8'))
-
-    test = test["tags"][ST_OF_CATEGORIES:ST_OF_CATEGORIES+NB_OF_CATEGORIES]
+        test = json.loads(response.text.encode('utf8'))
+        list_of_categories.append(test)
 
     # create DATABASE and drop if exist
     my_cursor.execute("DROP DATABASE IF EXISTS openfoodfacts")
@@ -46,20 +55,21 @@ def main():
         "ENGINE = InnoDB;"
     )
 
-    for product_ in test:
+    for var_i in range(0, len(list_of_url_categories)) :
+        product_ = list_of_categories[var_i]
+        url = list_of_url_categories[var_i]
         sql = "INSERT INTO `openfoodfacts`.`categories` (completed_name, URL, nb_of_products)" \
               " VALUES (%s, %s, %s)"
-        val = (str(product_["name"]).replace("'", " ").replace("\n", ""), product_["url"],
-               product_["products"])
+        val = (str(url).split("/")[4].replace(".json", ""), url, product_["count"])
         my_cursor.execute(sql, val)
 
     my_db.commit()
 
-    for product_ in test:
+    for product_ in list_of_url_categories:
         list_temp = []
         for i in range(1, NB_OF_PAGE_DL):
-            print(product_["url"] + "/" + str(i) + ".json")
-            url_in = product_["url"] + "/" + str(i) + ".json"
+            print(product_.replace(".json", "") + "/" + str(i) + ".json")
+            url_in = product_.replace(".json", "") + "/" + str(i) + ".json"
             response = requests.request("GET", url_in, headers=headers, data=payload)
             data = json.loads(response.text.encode('utf8'))
             data = data["products"]
@@ -68,7 +78,7 @@ def main():
                 if str(d_var['categories_lc']) == "fr":
                     data_temp.append(d_var)
             list_temp.extend(data_temp)
-        data_all.update({str(product_["name"]).replace("'", " ").replace("\n", ""): list_temp})
+        data_all.update({str(product_).split("/")[4].replace(".json", ""): list_temp})
 
     my_cursor.execute(
         "CREATE TABLE IF NOT EXISTS `openfoodfacts`.`products` ("
@@ -143,6 +153,10 @@ def main():
                 else:
                     val = val + (unique_product[list_of_key[value]],)
             val = val + (my_result[0][0], )
+            if val[7] == "No_nutriscore_grade":
+                val = list(val)
+                val[7] = "e"
+                val = tuple(val)
 
             my_cursor.execute(sql, val)
         my_db.commit()

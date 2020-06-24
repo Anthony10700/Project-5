@@ -101,7 +101,6 @@ class Product:
     @property
     def get_categories_str(self):
         """
-
         :rtype: string
         """
         return self.categories_str
@@ -109,7 +108,6 @@ class Product:
     @property
     def get_nutriscore_grade(self):
         """
-
         :rtype: string
         """
         return self.nutriscore_grade
@@ -117,7 +115,6 @@ class Product:
     @property
     def get_categories_idcategories(self):
         """
-
         :rtype: int
         """
         return self.categories_idcategories

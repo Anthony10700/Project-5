@@ -89,7 +89,7 @@ class Environment:
         :param nb_of_selected_id: the ID IN DATABASE of selected product
         :type list_of_product_substitute: list returned by database class, is the product substitute
         """
-
+        list_of_product_substitute = list_of_product_substitute[0:20]
         i = 0
         phrases = "{0} :                           DESCRIPTION                                  " \
                   "          : ID IN DATABASE : NUTRI SCORE".format("ID".ljust(3))
