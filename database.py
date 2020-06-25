@@ -7,12 +7,12 @@ import mysql.connector
 class DataBase:
     """For database management (connection , select, insert etc.)"""
 
-    def __init__(self):
+    def __init__(self, host="localhost", user="root", password="qsdfghjklm"):
         self.my_cursor = object
         self.my_db = object
-        self.host = "localhost"
-        self.user = "root"
-        self.password = "aqwXSZedcVFR"
+        self.host = host
+        self.user = user
+        self.password = password
         self.list_of_products = []
 
     def connect_to_db(self):
@@ -33,7 +33,7 @@ class DataBase:
         sql_insert_str = the sql insert cmd
         sql_value = the value for the cmd line"""
         self.my_cursor.execute(sql_insert_str, sql_value)
-        self.my_db.commit()  # TEST IF RETURN ERROR BD EX: INSERT in babsdqsd.table
+        self.my_db.commit()
 
     def select_a_product(self, id_of_product):
         """Select a product to a database"""
@@ -51,39 +51,33 @@ class DataBase:
             "`openfoodfacts`.`products`.`categories_idcategories` = {0}".format(str(categories_id)))
 
     def select_all_substitute_product(self, categories_str, categories_id):
-        """        :param categories_id: id of the categorie product
-        :param categories_str:  categorie list string for the product"""
+        """
+        :param categories_id: id of the categorie product
+        :param categories_str:  categorie list string for the product
+        :return list of subtitle product in order ascending of nutrition grade
+        """
 
         result = self.select_to_db("SELECT * FROM `openfoodfacts`.`products` WHERE `openfoodfacts"
                                    "`.`products`.`categories_idcategories` = "
                                    "{0}".format(str(int(categories_id) + 1)))
         list_of_return_value = []
-        for i in range(0, len(result)):
-            list_of_categories = str(result[i][7]).replace("\'", " ").strip().split(",")
+        for i, item in enumerate(result):
+            list_of_categories = str(item[7]).replace("\'", " ").strip().split(",")
             list_of_select_categories = categories_str.replace("\'", " ").strip().split(",")
 
             for element in reversed(list_of_categories):
                 for element_in in reversed(list_of_select_categories):
                     element_as_bytes = str.encode(element)
-                    element_in_as_bytess = str.encode(element_in)
-                    if element_as_bytes == element_in_as_bytess:
-                        list_of_return_value.append(result[i])
+                    element_in_as_bytes = str.encode(element_in)
+                    if element_as_bytes == element_in_as_bytes:
+                        list_of_return_value.append(item)
                         break
                 else:
                     continue
                 break
 
-        var_i = 0
-        while var_i < len(list_of_return_value) - 1:
-            car_one = list_of_return_value[var_i][8]
-            car_two = list_of_return_value[var_i + 1][8]
-            if car_one > car_two:
-                tmp = list_of_return_value[var_i]
-                list_of_return_value[var_i] = list_of_return_value[var_i + 1]
-                list_of_return_value[var_i + 1] = tmp
-                var_i = 0
-            var_i += 1
-        var_i = 0
+        list_of_return_value = sorted(list_of_return_value, key=lambda test: test[8])
+
         if len(list_of_return_value) == 0:
             list_of_return_value.append(["NOTHING"] * 10)
 
@@ -110,7 +104,7 @@ class DataBase:
         """:return all product saved in data base table products_save"""
         result = self.select_to_db("SELECT * FROM `openfoodfacts`.`products_save`")
         list_of_return_value = []
-        for i in range(0, len(result)):
-            list_of_return_value.append(result[i])
+        for i, item in enumerate(result):
+            list_of_return_value.append(item)
 
         return list_of_return_value

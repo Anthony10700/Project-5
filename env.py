@@ -15,16 +15,18 @@ class Environment:
         self.list_of_choice = []
         self.list_of_result = []
         self.categories_id = 0
-        self.my_product_select = object
-        self.my_product_base = object
+        self.my_product_select = prd.Product
+        self.my_product_base = prd.Product
 
     def write_text_for_user(self, text, list_of_choices=[]):
         """ function for write text for user save in last question et define list of choices
+        :rtype: object
         :param list_of_choices:
         :type text: list of choices ex : ["1","2"] for 1 and 2 choices """
         if len(list_of_choices) > 0:
             self.list_of_choice = list_of_choices
         self.last_question = text
+
         print(text)
 
     def print_last_phrase(self):
@@ -37,7 +39,7 @@ class Environment:
         # print(self.choice)
 
     def input_user_verification(self):
-        """check the input text user is in the choice list"""
+        """check the input text user is in the choice list and loop if is not"""
         self.get_input_user()
         while self.choice not in self.list_of_choice:
             self.print_last_phrase()
@@ -54,13 +56,13 @@ class Environment:
             str(value_loop_for_incrementation).ljust(3),
             str(product_base.get_completed_name).replace("\n", "").ljust(80),
             str(product_base.get_id_products).ljust(14),
-            str(product_base.get_nutriscore_grade).upper())
+            str(product_base.get_nutrition_score_grade).upper())
 
         phrases += "\n > Substitut   {0} : {1} : {2} : {3}".format(
             str(value_loop_for_incrementation).ljust(3),
             str(product_save.get_completed_name).replace("\n", "").ljust(80),
             str(product_save.get_id_products).ljust(14),
-            str(product_save.get_nutriscore_grade).upper())
+            str(product_save.get_nutrition_score_grade).upper())
         print(phrases)
 
         self.last_question = \
@@ -72,11 +74,10 @@ class Environment:
         :type temp_val: product select list of 9 element
         """
         phrases = "{0} : {1} : {2} : {3}".format(str(value_loop_for_incrementation).ljust(3),
-                                                 str(temp_val.get_completed_name).replace("\n",
-                                                                                          "").ljust(
-                                                     80),
+                                                 str(temp_val.get_completed_name).replace(
+                                                     "\n", "").ljust(80),
                                                  str(temp_val.get_id_products).ljust(14),
-                                                 str(temp_val.get_nutriscore_grade).upper())
+                                                 str(temp_val.get_nutrition_score_grade).upper())
         print(phrases)
 
         self.last_question = \
@@ -106,13 +107,15 @@ class Environment:
                 phrases = "{0} : {1} : {2} : {3}".format(str(i).ljust(3),
                                                          str(product.get_completed_name.ljust(80)),
                                                          str(product.get_id_products).ljust(14),
-                                                         str(product.get_nutriscore_grade).upper())
+                                                         str(product.get_nutrition_score_grade).
+                                                         upper())
                 print(phrases)
                 self.list_of_choice.append(str(i))
                 self.history_result.append(product)
                 i += 1
             elif i == 0 and str(nts_select_id).lower() > str(one_result[8]).lower():
                 print("PAS DE RESULTAT")
+
         if len(self.history_result) == 0:
             print("Désoler il n'y a pas d'autre produit avec un nutri score moins élevé \n")
 
@@ -122,7 +125,7 @@ class Environment:
         :param value_loop_for_incrementation: incremented value for list id
         :type temp_val: product select list of 9 element
         """
-        phrases = "{0} :   {1} :  pour un total de  {2}products".format(
+        phrases = "{0} :   {1} :  pour un total de  {2} products".format(
             str(value_loop_for_incrementation).ljust(3), str(temp_val.get_completed_name).ljust(60),
             str(temp_val.get_nb_of_products).ljust(7))
         print(phrases)

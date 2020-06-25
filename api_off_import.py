@@ -5,7 +5,7 @@ import json
 import requests
 import mysql.connector
 
-NB_OF_PAGE_DL = 20  # 1 page = 20 products
+NB_OF_PAGE_DL = 50  # 1 page = 20 products
 
 
 def main():
@@ -24,12 +24,13 @@ def main():
         "https://fr.openfoodfacts.org/categorie/jus-de-fruits.json",
         "https://fr.openfoodfacts.org/categorie/nectars-de-fruits.json",
         "https://fr.openfoodfacts.org/categorie/sodas-aux-fruits.json",
-        "https://fr.openfoodfacts.org/categorie/boissons-alcoolisees.json",
+        "https://fr.openfoodfacts.org/categorie/boissons-chaudes.json",
         "https://fr.openfoodfacts.org/categorie/boissons-au-cafe.json",
         "https://fr.openfoodfacts.org/categorie/tisanes-infusees.json",
-        "https://fr.openfoodfacts.org/categorie/boissons-au-the.json"
+        "https://fr.openfoodfacts.org/categorie/boissons-au-the.json",
+        "https://fr.openfoodfacts.org/categorie/gateaux.json"
     ]
-
+    #  import info of categories
     for url in list_of_url_categories:
         payload = {}
         headers = {}
@@ -55,9 +56,10 @@ def main():
         "ENGINE = InnoDB;"
     )
 
-    for var_i in range(0, len(list_of_url_categories)) :
+    for var_i, item in enumerate(list_of_url_categories):
+        #  insert in database all categories completed_name, URL and nb_of_products
         product_ = list_of_categories[var_i]
-        url = list_of_url_categories[var_i]
+        url = item
         sql = "INSERT INTO `openfoodfacts`.`categories` (completed_name, URL, nb_of_products)" \
               " VALUES (%s, %s, %s)"
         val = (str(url).split("/")[4].replace(".json", ""), url, product_["count"])
@@ -66,6 +68,7 @@ def main():
     my_db.commit()
 
     for product_ in list_of_url_categories:
+        #  import all product for all categories in the limit NB_OF_PAGE_DL
         list_temp = []
         for i in range(1, NB_OF_PAGE_DL):
             print(product_.replace(".json", "") + "/" + str(i) + ".json")
@@ -131,10 +134,14 @@ def main():
     )
 
     for product_ in data_all:
+        #  insert all product in database with the fk_key FOREIGN KEY (`categories_idcategories`)"
+        #  REFERENCES `openfoodfacts`.`categories` (`idcategories`)"
+
         print(product_)
         sql_in = "SELECT idcategories FROM `openfoodfacts`.`categories` WHERE " \
-              "`openfoodfacts`.`categories`.`completed_name` =\'{0}\'".format(str(product_).replace("'", " ").
-                                                                              replace("\n", ""))
+                 "`openfoodfacts`.`categories`.`completed_name` =\'{0}\'".format(str(product_).
+                                                                                 replace("'", " ").
+                                                                                 replace("\n", ""))
         my_cursor.execute(sql_in)
         my_result = my_cursor.fetchall()
         for unique_product in data_all[product_]:
@@ -152,7 +159,7 @@ def main():
                     val = val + ("No_" + list_of_key[value],)
                 else:
                     val = val + (unique_product[list_of_key[value]],)
-            val = val + (my_result[0][0], )
+            val = val + (my_result[0][0],)
             if val[7] == "No_nutriscore_grade":
                 val = list(val)
                 val[7] = "e"
