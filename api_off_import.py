@@ -14,7 +14,7 @@ def main():
     my_db = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="aqwXSZedcVFR"
+        password="qsdfghjklm"
     )
     my_cursor = my_db.cursor()
     list_of_categories = []

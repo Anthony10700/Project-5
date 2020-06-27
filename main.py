@@ -45,8 +45,8 @@ def main():
                 get_completed_name + "\n")
             my_result = d_base.select_all_products(int(my_env.choice) + 1)
             my_env.write_text_for_user(
-                "Liste des produits sauvegardés : \n{0} : {1} : {2} : {3}"
-                "\n".format("ID".ljust(18), "DESCRIPTION".ljust(80), "ID IN DATABASE".ljust(14),
+                "Liste des produits : \n{0} : {1} : {2} : {3}"
+                "\n".format("ID".ljust(3), "DESCRIPTION".ljust(80), "ID IN DATABASE".ljust(14),
                             "NUTRI SCORE"))
 
             my_env.list_of_result = []

@@ -92,8 +92,8 @@ class Environment:
         """
         list_of_product_substitute = list_of_product_substitute[0:20]
         i = 0
-        phrases = "{0} :                           DESCRIPTION                                  " \
-                  "          : ID IN DATABASE : NUTRI SCORE".format("ID".ljust(3))
+        phrases = "{0} : {1} : {2} : {3}".format("ID".ljust(3), "DESCRIPTION".ljust(80),
+                                                 "ID IN DATABASE".ljust(14), "NUTRI SCORE")
         print(phrases)
 
         self.list_of_choice = []

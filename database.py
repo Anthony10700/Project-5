@@ -52,9 +52,12 @@ class DataBase:
 
     def select_all_substitute_product(self, categories_str, categories_id):
         """
-        :param categories_id: id of the categorie product
+        :param categories_id: id of the categorie product base
         :param categories_str:  categorie list string for the product
+        ex string ( Aliments et boissons à base de végétaux, Boissons, Boissons à base de végétaux,
+        Boissons aux fruits, Boissons à l'orange, Boissons avec sucre ajouté )
         :return list of subtitle product in order ascending of nutrition grade
+
         """
 
         result = self.select_to_db("SELECT * FROM `openfoodfacts`.`products` WHERE `openfoodfacts"
