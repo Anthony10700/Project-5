@@ -64,9 +64,10 @@ class DataBase:
                                    "`.`products`.`categories_idcategories` = "
                                    "{0}".format(str(int(categories_id) + 1)))
         list_of_return_value = []
-        for i, item in enumerate(result):
+        list_of_select_categories = categories_str.replace("\'", " ").strip().split(",")
+
+        for item in result:
             list_of_categories = str(item[7]).replace("\'", " ").strip().split(",")
-            list_of_select_categories = categories_str.replace("\'", " ").strip().split(",")
 
             for element in reversed(list_of_categories):
                 for element_in in reversed(list_of_select_categories):
@@ -107,7 +108,7 @@ class DataBase:
         """:return all product saved in data base table products_save"""
         result = self.select_to_db("SELECT * FROM `openfoodfacts`.`products_save`")
         list_of_return_value = []
-        for i, item in enumerate(result):
+        for item in result:
             list_of_return_value.append(item)
 
         return list_of_return_value

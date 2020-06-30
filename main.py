@@ -102,7 +102,7 @@ def main():
                         "Les magasins sont                      : {2}\n"
                         "Url openfoodfacts est                  : {3}\n\n".format(
                             str(my_env.my_product_select.get_completed_name),
-                            str(my_env.my_product_select.get_nutrition_score_grade),
+                            str(str(my_env.my_product_select.get_nutrition_score_grade).upper()),
                             str(my_env.my_product_select.get_store),
                             str(my_env.my_product_select.get_url)))
 
